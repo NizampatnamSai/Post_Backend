@@ -1,9 +1,12 @@
 const express = require("express");
 const { CreatePosts } = require("./Controllers/PostsController");
+const dotEnv = require("dotenv").config();
 
 const port = 7001;
 const app = express();
 const formidable = require("express-formidable");
+const connectDb = require("./config/dbConnection");
+connectDb();
 
 //normal Process
 /*
