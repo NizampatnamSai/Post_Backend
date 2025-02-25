@@ -38,7 +38,8 @@ const getPostsById = asyncHandler(async (req, res) => {
 });
 
 const editPostsById = asyncHandler(async (req, res) => {
-  const { image, title } = req.body;
+  const { title } = req.fields;
+  const { image } = req.files;
   if (!image && !title) {
     return res.json({
       message: "image or title is required",
@@ -62,8 +63,10 @@ const deletePostsById = asyncHandler(async (req, res) => {
 });
 
 const PostCommentsById = asyncHandler(async (req, res) => {
-  const { image, title } = req.body;
-  console.log(image, title, req.body, "imageimage");
+  const { title } = req.fields;
+  const { image } = req.files;
+  console.log(image, title, "imageimage");
+
   if (!image && !title) {
     return res.json({
       message: "image or title is required",

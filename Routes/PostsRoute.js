@@ -17,9 +17,12 @@ router.route("").post(formidable(), CreatePosts).get(getPosts);
 router
   .route("/:id")
   .get(getPostsById)
-  .patch(editPostsById)
+  .patch(formidable(), editPostsById)
   .delete(deletePostsById);
-router.route("/comments/:id").get(getCommentsById).post(PostCommentsById);
+router
+  .route("/comments/:id")
+  .get(getCommentsById)
+  .post(formidable(), PostCommentsById);
 router.route("/likes/:id").get(getLikesById).post(PostLikesById);
 
 module.exports = router;
