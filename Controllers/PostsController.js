@@ -1,5 +1,5 @@
 const asyncHandler = require("express-async-handler");
-
+const fs = require("fs");
 const CreatePosts = asyncHandler(async (req, res) => {
   const { image, title } = req.body;
   console.log("Fields:", req.fields); // Text fields from FormData
@@ -47,10 +47,15 @@ const editPostsById = asyncHandler(async (req, res) => {
       data: [],
     });
   }
+  const imageBase64 = fs.readFileSync(image?.path, { encoding: "base64" });
+
   res.json({
     message: "This is Posts edit by ID API",
     status: true,
-    data: [],
+    data: {
+      title,
+      image: `data:${image?.type};base64,${imageBase64}`, // Base64 encoded image
+    },
   });
 });
 
@@ -74,10 +79,15 @@ const PostCommentsById = asyncHandler(async (req, res) => {
       data: [],
     });
   }
+  const imageBase64 = fs.readFileSync(image?.path, { encoding: "base64" });
+
   res.json({
     message: "This is Posts comments by ID API",
     status: true,
-    data: [],
+    data: {
+      title,
+      image: `data:${image.type};base64,${imageBase64}`, // Base64 encoded image
+    },
   });
 });
 const getCommentsById = asyncHandler(async (req, res) => {
