@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const User = require("../Modal/userModal");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const RegisterUser = asyncHandler(async (req, res) => {
   const { username, email, password } = req.body;
@@ -48,12 +49,28 @@ const RegisterUser = asyncHandler(async (req, res) => {
     email,
     password: hashedPassword,
   });
+
+  const accessToken = jwt.sign(
+    {
+      user: {
+        username: user.username,
+        email: user.email,
+        id: user.id,
+      },
+    },
+    process.env.ACCESS_TOKEN_SECRET,
+    {
+      expiresIn: "15m",
+    }
+  );
+
   if (user) {
     return res.status(201).json({
       _id: user.id,
       email: user.email,
       status: true,
       message: "Successfully registered",
+      accessToken,
     });
   } else {
     return res
@@ -82,6 +99,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
   const isEmailAvailable = await User.findOne({ email });
   const isUserNameAvailable = await User.findOne({ username });
+  console.log(isEmailAvailable, isUserNameAvailable, "isUserNameAvailable");
   if (email && !isEmailAvailable && !isUserNameAvailable) {
     return res.json({
       message: "This email not existed",
@@ -96,10 +114,37 @@ const loginUser = asyncHandler(async (req, res) => {
       data: [],
     });
   }
+  let passwordMatchWithEmail =
+    isEmailAvailable &&
+    (await bcrypt.compare(password, isEmailAvailable.password));
+  let passwordMatchWithUserName =
+    isUserNameAvailable &&
+    (await bcrypt.compare(password, isUserNameAvailable.password));
+  if (!passwordMatchWithEmail && !passwordMatchWithUserName) {
+    return res.json({
+      message: "Password Not matched!",
+      status: false,
+      data: [],
+    });
+  }
+  let reqUser = passwordMatchWithEmail || passwordMatchWithUserName;
+  const accessToken = jwt.sign(
+    {
+      user: {
+        username: reqUser.username,
+        email: reqUser.email,
+        id: reqUser.id,
+      },
+    },
+    process.env.ACCESS_TOKEN_SECRET,
+    {
+      expiresIn: "15m",
+    }
+  );
   res.json({
-    message: "This is for Login User",
+    message: "SuccessFully Login",
     status: true,
-    data: [],
+    accessToken,
   });
 });
 
