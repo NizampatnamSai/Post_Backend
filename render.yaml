@@ -2,12 +2,16 @@ services:
   - type: web
     name: my-node-app
     runtime: node
-    env: node
+
     plan: free
     region: oregon
     branch: main
     buildCommand: npm install
     startCommand: npm start
     envVars:
-      - key: NODE_ENV
-        value: production
+      - key: CONNECTION_STRING
+        value: mongodb+srv://posts:posts@cluster0.1gujf.mongodb.net/posts?retryWrites=true&w=majority&appName=Cluster0
+      - key: CONNECTION_STRING1
+        value: mongodb+srv://posts:posts-backend@cluster0.1gujf.mongodb.net/posts?retryWrites=true&w=majority&appName=Cluster0
+      - key: ACCESS_TOKEN_SECRET
+        value: secret
