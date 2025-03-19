@@ -127,7 +127,8 @@ const loginUser = asyncHandler(async (req, res) => {
       data: [],
     });
   }
-  let reqUser = passwordMatchWithEmail || passwordMatchWithUserName;
+  let reqUser = passwordMatchWithEmail ? isEmailAvailable : isUserNameAvailable;
+  console.log(reqUser, "reqUser");
   const accessToken = jwt.sign(
     {
       user: {
@@ -138,7 +139,7 @@ const loginUser = asyncHandler(async (req, res) => {
     },
     process.env.ACCESS_TOKEN_SECRET,
     {
-      expiresIn: "15m",
+      expiresIn: "1d",
     }
   );
   res.json({

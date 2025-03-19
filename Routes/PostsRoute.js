@@ -10,10 +10,14 @@ const {
   PostCommentsById,
   getLikesById,
   PostLikesById,
+  getMyPosts,
 } = require("../Controllers/PostsController");
+const validateToken = require("../MiddleWare/validateTokenHandler");
 const router = express.Router();
+router.use(validateToken);
 
 router.route("").post(formidable(), CreatePosts).get(getPosts);
+router.route("/my-posts").get(getMyPosts);
 router
   .route("/:id")
   .get(getPostsById)

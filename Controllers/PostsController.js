@@ -1,9 +1,10 @@
 const asyncHandler = require("express-async-handler");
 const fs = require("fs");
 const CreatePosts = asyncHandler(async (req, res) => {
-  const { image, title } = req.body;
-  console.log("Fields:", req.fields); // Text fields from FormData
-  console.log("Files:", req.files);
+  // const { image, title } = req.body;
+  const { title } = req.fields;
+  const { image } = req.files;
+
   if (!image && !title) {
     return res.json({
       message: "image or title is required",
@@ -23,6 +24,15 @@ const getPosts = asyncHandler(async (req, res) => {
   console.log("This is Posts get API");
   res.json({
     message: "This is Posts get API",
+    status: true,
+    data: [],
+  });
+});
+
+const getMyPosts = asyncHandler(async (req, res) => {
+  const { username, email, id } = req.user;
+  res.json({
+    message: `Yours Posts ${id}`,
     status: true,
     data: [],
   });
@@ -121,4 +131,5 @@ module.exports = {
   getCommentsById,
   PostLikesById,
   getLikesById,
+  getMyPosts,
 };
