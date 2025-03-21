@@ -71,6 +71,7 @@ const RegisterUser = asyncHandler(async (req, res) => {
       status: true,
       message: "Successfully registered",
       accessToken,
+      user: reqUser,
     });
   } else {
     return res
@@ -146,6 +147,7 @@ const loginUser = asyncHandler(async (req, res) => {
     message: "SuccessFully Login",
     status: true,
     accessToken,
+    user: reqUser,
   });
 });
 
