@@ -66,12 +66,14 @@ const RegisterUser = asyncHandler(async (req, res) => {
 
   if (user) {
     return res.status(201).json({
-      _id: user.id,
-      email: user.email,
       status: true,
       message: "Successfully registered",
       accessToken,
-      user: reqUser,
+      user: {
+        username: user.username,
+        email: user.email,
+        id: user.id,
+      },
     });
   } else {
     return res
@@ -147,7 +149,11 @@ const loginUser = asyncHandler(async (req, res) => {
     message: "SuccessFully Login",
     status: true,
     accessToken,
-    user: reqUser,
+    user: {
+      username: reqUser.username,
+      email: reqUser.email,
+      id: reqUser.id,
+    },
   });
 });
 
