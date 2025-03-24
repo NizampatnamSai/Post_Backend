@@ -85,13 +85,13 @@ const RegisterUser = asyncHandler(async (req, res) => {
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  emailRegex.test(email);
+
   let UserEmail;
   let UserName;
-  if (emailRegex.test(value)) {
+  if (emailRegex.test(email)) {
     UserEmail = email;
   }
-  if (!emailRegex.test(value)) {
+  if (!emailRegex.test(email)) {
     UserName = email;
   }
   if (!UserName && !UserEmail) {
