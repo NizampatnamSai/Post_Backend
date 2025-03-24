@@ -83,8 +83,18 @@ const RegisterUser = asyncHandler(async (req, res) => {
 });
 
 const loginUser = asyncHandler(async (req, res) => {
-  const { username, email, password } = req.body;
-  if (!username && !email) {
+  const { email, password } = req.body;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  emailRegex.test(email);
+  let UserEmail;
+  let UserName;
+  if (emailRegex.test(value)) {
+    UserEmail = email;
+  }
+  if (!emailRegex.test(value)) {
+    UserName = email;
+  }
+  if (!UserName && !UserEmail) {
     return res.json({
       message: "Name or email is required for Login",
       status: false,
@@ -100,17 +110,17 @@ const loginUser = asyncHandler(async (req, res) => {
     });
   }
 
-  const isEmailAvailable = await User.findOne({ email });
-  const isUserNameAvailable = await User.findOne({ username });
+  const isEmailAvailable = await User.findOne({ UserEmail });
+  const isUserNameAvailable = await User.findOne({ UserName });
   console.log(isEmailAvailable, isUserNameAvailable, "isUserNameAvailable");
-  if (email && !isEmailAvailable && !isUserNameAvailable) {
+  if (UserEmail && !isEmailAvailable && !isUserNameAvailable) {
     return res.json({
       message: "This email not existed",
       status: false,
       data: [],
     });
   }
-  if (username && !isUserNameAvailable && !isEmailAvailable) {
+  if (UserName && !isUserNameAvailable && !isEmailAvailable) {
     return res.json({
       message: "This username not existed",
       status: false,
