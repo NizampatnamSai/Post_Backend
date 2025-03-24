@@ -47,7 +47,8 @@ const CreatePosts = asyncHandler(async (req, res) => {
 });
 
 const getPosts = asyncHandler(async (req, res) => {
-  const Posts = await Post.find();
+  // const Posts = await Post.find();
+  const Posts = await Post.find()?.sort({ createdAt: -1 });
 
   console.log("This is Posts get API", Posts);
   res.json({
