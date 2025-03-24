@@ -110,8 +110,8 @@ const loginUser = asyncHandler(async (req, res) => {
     });
   }
 
-  const isEmailAvailable = await User.findOne({ UserEmail });
-  const isUserNameAvailable = await User.findOne({ UserName });
+  const isEmailAvailable = await User.findOne({ email });
+  const isUserNameAvailable = await User.findOne({ email });
   console.log(isEmailAvailable, isUserNameAvailable, "isUserNameAvailable");
   if (UserEmail && !isEmailAvailable && !isUserNameAvailable) {
     return res.json({
