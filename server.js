@@ -1,6 +1,7 @@
 const express = require("express");
 const { CreatePosts } = require("./Controllers/PostsController");
 const dotEnv = require("dotenv").config();
+const cors = require("cors");
 
 const port = 7001;
 const app = express();
@@ -45,6 +46,7 @@ app.post("/user/login", (req, res) => {
   console.log("This is to login the user");
 });
 */
+app.use(cors());
 app.use(express.json());
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*"); // Allow all origins
