@@ -3,39 +3,55 @@ const fs = require("fs");
 const Post = require("../Modal/PostModal");
 const { default: mongoose } = require("mongoose");
 
-const CreatePosts = asyncHandler(async (req, res) => {
-  // const { image, title } = req.body;
-  // await mongoose.connection.db.collection("posts").dropIndex("email_1");
+const cloudinary = require("../utils/cloudinary.js"); // adjust path if needed
 
-  console.log(req.user, "userss");
+const CreatePosts = asyncHandler(async (req, res) => {
   const { title } = req.fields;
   const { image } = req.files;
+
   const { username, email, id } = req.user;
+
   if (!image && !title) {
     return res.json({
-      message: "image or title is required",
+      message: "Image or title is required",
       status: false,
       data: [],
     });
   }
+
+  let imageUrl = "";
+
+  if (image) {
+    try {
+      // Upload to cloudinary
+      const result = await cloudinary.uploader.upload(image.path, {
+        folder: "posts",
+      });
+
+      imageUrl = result.secure_url;
+
+      // Delete local temp file
+      fs.unlinkSync(image.path);
+    } catch (err) {
+      console.error("Cloudinary error:", err);
+      return res.status(500).json({
+        message: "Failed to upload image",
+        status: false,
+      });
+    }
+  }
+
   const Posts = await Post.create({
     username,
     email,
     title,
     userId: id,
-    // password: hashedPassword,
+    image: imageUrl,
   });
-
-  // res.json({
-  //   message: "This is Posts create API",
-  //   status: true,
-  //   data: [],
-  // });
 
   if (Posts) {
     return res.status(201).json({
       id: Posts.id,
-
       status: true,
       message: "Successfully Created",
     });
