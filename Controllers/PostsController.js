@@ -86,12 +86,39 @@ const getMyPosts = asyncHandler(async (req, res) => {
 });
 
 const getPostsById = asyncHandler(async (req, res) => {
-  console.log("This is Posts get by ID API");
-  res.json({
-    message: "This is Posts get by ID API",
-    status: true,
-    data: [],
-  });
+  const { id } = req.params; // Get the ID from URL params
+
+  try {
+    if (!id || id?.toString()?.length < 24) {
+      return res.status(400).json({
+        message: "Invalid ID",
+        status: false,
+        data: null,
+      });
+    }
+    const post = await Post.findById(id); // Fetch post by ID
+
+    if (!post) {
+      return res.status(404).json({
+        message: "Post not found",
+        status: false,
+        data: null,
+      });
+    }
+
+    res.json({
+      message: "Post fetched successfully",
+      status: true,
+      data: post,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "An error occurred while fetching the post",
+      status: false,
+      data: null,
+    });
+  }
 });
 
 const editPostsById = asyncHandler(async (req, res) => {
