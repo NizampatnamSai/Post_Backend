@@ -91,7 +91,7 @@ const getPostsById = asyncHandler(async (req, res) => {
   try {
     if (!id || id?.toString()?.length < 24) {
       return res.status(400).json({
-        message: "Invalid ID",
+        message: "Please pass valid ID",
         status: false,
         data: null,
       });
@@ -122,32 +122,97 @@ const getPostsById = asyncHandler(async (req, res) => {
 });
 
 const editPostsById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
   const { title } = req.fields;
   const { image } = req.files;
-  if (!image && !title) {
+
+  if (!title && !image) {
     return res.json({
-      message: "image or title is required",
+      message: "Image or title is required",
       status: false,
       data: [],
     });
   }
-  const imageBase64 = fs.readFileSync(image?.path, { encoding: "base64" });
+
+  const post = await Post.findById(id);
+  if (!post) {
+    return res.status(404).json({ message: "Post not found", status: false });
+  }
+
+  // Update title if provided
+  if (title) post.title = title;
+
+  // Handle image upload if provided
+  if (image) {
+    try {
+      const result = await cloudinary.uploader.upload(image.path, {
+        folder: "posts",
+      });
+
+      post.image = result.secure_url;
+
+      // Delete temp file
+      fs.unlinkSync(image.path);
+    } catch (err) {
+      console.error("Cloudinary error:", err);
+      return res.status(500).json({
+        message: "Failed to upload image",
+        status: false,
+      });
+    }
+  }
+
+  await post.save();
 
   res.json({
-    message: "This is Posts edit by ID API",
+    message: "Post updated successfully",
     status: true,
-    data: {
-      title,
-      image: `data:${image?.type};base64,${imageBase64}`, // Base64 encoded image
-    },
+    data: post,
   });
 });
 
 const deletePostsById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  if (!id || id?.toString()?.length < 24) {
+    return res.status(400).json({
+      message: "Please pass valid ID",
+      status: false,
+      data: null,
+    });
+  }
+  console.log(id, "id");
+  const post = await Post.findById(id);
+  if (!post) {
+    return res.status(404).json({
+      message: "Post not found",
+      status: false,
+    });
+  }
+
+  // Optional: delete image from Cloudinary if exists
+  if (post.image) {
+    // Extract public_id from the URL if you want to delete the image
+    const publicIdMatch = post.image.match(
+      /\/posts\/(.+?)\.(jpg|jpeg|png|webp)/
+    );
+    if (publicIdMatch) {
+      const publicId = `posts/${publicIdMatch[1]}`;
+      try {
+        await cloudinary.uploader.destroy(publicId);
+      } catch (err) {
+        console.warn("Cloudinary image delete failed:", err.message);
+        // Not critical, proceed with post deletion
+      }
+    }
+  }
+
+  // Delete the post from DB
+  await post.deleteOne();
+
   res.json({
-    message: "This is Posts delete by ID API",
+    message: "Post deleted successfully",
     status: true,
-    data: [],
+    data: { id },
   });
 });
 
