@@ -7,6 +7,7 @@ const port = 7001;
 const app = express();
 const formidable = require("express-formidable");
 const connectDb = require("./config/dbConnection");
+const { default: axios } = require("axios");
 connectDb();
 
 //normal Process
@@ -59,6 +60,26 @@ app.use((req, res, next) => {
 
 app.use("/posts", require("./Routes/PostsRoute"));
 app.use("/user", require("./Routes/Userroute"));
+
+app.get("/api/spyfu", async (req, res) => {
+  // const domain = req.query.domain;
+
+  // if (!domain) {
+  //   return res.status(400).json({ error: "Missing domain query param" });
+  // }
+
+  try {
+    const response = await axios.get(
+      `https://www.spyfu.com/apis/domain_stats_api/v2/getLatestDomainStats?domain=topazlabs.com&api_key=UX8BMIBN`
+    );
+
+    res.json(response.data);
+  } catch (error) {
+    console.error("Error fetching SpyFu data:", error.message);
+    res.status(500).json({ error: "Failed to fetch data from SpyFu" });
+  }
+});
+
 app.listen(port, () => {
   console.log(`server is running on port ${port}`);
 });
