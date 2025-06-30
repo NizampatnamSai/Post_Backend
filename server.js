@@ -63,6 +63,7 @@ app.use("/user", require("./Routes/Userroute"));
 
 app.get("/api/spyfu", async (req, res) => {
   // const domain = req.query.domain;
+  const domain = req.query.domain;
 
   // if (!domain) {
   //   return res.status(400).json({ error: "Missing domain query param" });
@@ -70,7 +71,10 @@ app.get("/api/spyfu", async (req, res) => {
 
   try {
     const response = await axios.get(
-      `https://www.spyfu.com/apis/domain_stats_api/v2/getLatestDomainStats?domain=topazlabs.com&api_key=UX8BMIBN`
+      // `https://www.spyfu.com/apis/domain_stats_api/v2/getLatestDomainStats?domain=topazlabs.com&api_key=UX8BMIBN`
+      `https://www.spyfu.com/apis/domain_stats_api/v2/getLatestDomainStats?domain=${encodeURIComponent(
+        domain
+      )}&api_key=UX8BMIBN`
     );
 
     res.json(response.data);
