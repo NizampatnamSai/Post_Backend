@@ -11,6 +11,6 @@ const {
 // POST → Ask AI to generate post text
 
 // router.post("/generate-post", generateGeminiPostsPost);
-router.post("/generate-post", generatePostWithGroq);
+router.post("/generate-post", validateToken, generatePostWithGroq);
 
 module.exports = router;
