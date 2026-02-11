@@ -60,29 +60,30 @@ app.use((req, res, next) => {
 
 app.use("/posts", require("./Routes/PostsRoute"));
 app.use("/user", require("./Routes/Userroute"));
+app.use("/api/ai", require("./Routes/GoogleGimini"));
 
-app.get("/api/spyfu", async (req, res) => {
-  // const domain = req.query.domain;
-  const domain = req.query.domain;
+// app.get("/api/spyfu", async (req, res) => {
+//   // const domain = req.query.domain;
+//   const domain = req.query.domain;
 
-  // if (!domain) {
-  //   return res.status(400).json({ error: "Missing domain query param" });
-  // }
+//   // if (!domain) {
+//   //   return res.status(400).json({ error: "Missing domain query param" });
+//   // }
 
-  try {
-    const response = await axios.get(
-      // `https://www.spyfu.com/apis/domain_stats_api/v2/getLatestDomainStats?domain=topazlabs.com&api_key=UX8BMIBN`
-      `https://www.spyfu.com/apis/domain_stats_api/v2/getLatestDomainStats?domain=${encodeURIComponent(
-        domain
-      )}&api_key=UX8BMIBN`
-    );
+//   try {
+//     const response = await axios.get(
+//       // `https://www.spyfu.com/apis/domain_stats_api/v2/getLatestDomainStats?domain=topazlabs.com&api_key=UX8BMIBN`
+//       `https://www.spyfu.com/apis/domain_stats_api/v2/getLatestDomainStats?domain=${encodeURIComponent(
+//         domain
+//       )}&api_key=UX8BMIBN`
+//     );
 
-    res.json(response.data);
-  } catch (error) {
-    console.error("Error fetching SpyFu data:", error.message);
-    res.status(500).json({ error: "Failed to fetch data from SpyFu" });
-  }
-});
+//     res.json(response.data);
+//   } catch (error) {
+//     console.error("Error fetching SpyFu data:", error.message);
+//     res.status(500).json({ error: "Failed to fetch data from SpyFu" });
+//   }
+// });
 
 app.listen(port, () => {
   console.log(`server is running on port ${port}`);
