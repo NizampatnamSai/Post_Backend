@@ -32,7 +32,7 @@ app.post("/sync-auto-logs", async (req, res) => {
     const { logs } = req.body;
 
     console.log("📥 /sync-auto-logs hit");
-    console.log("Logs count:", logs?.length || 0);
+    console.log("Logs count:", logs, logs?.length || 0);
 
     if (!logs || !Array.isArray(logs)) {
       return res.status(400).json({
