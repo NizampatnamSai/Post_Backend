@@ -10,43 +10,6 @@ const connectDb = require("./config/dbConnection");
 const { default: axios } = require("axios");
 connectDb();
 
-//normal Process
-/*
-//Posts route
-
-app.get("/posts", (req, res) => {
-  console.log("This is Posts get API");
-});
-
-app.post("/posts", (req, res) => {
-  console.log("This is to create new posts");
-});
-app.get("/posts/:id", (req, res) => {
-  console.log("This is to get post by ID");
-});
-
-app.patch("posts/:id", (req, res) => {
-  console.log("This is to update post by ID, required edit access by Admin");
-});
-app.delete("posts/:id", (req, res) => {
-  console.log("This is to update post by ID");
-});
-
-app.get("/posts/comments/:id", (req, res) => {
-  console.log("This is to get post Comments by ID");
-});
-app.get("/posts/likes/:id", (req, res) => {
-  console.log("This is to get post Likes by ID");
-});
-
-// Users
-app.post("/user/register", (req, res) => {
-  console.log("This is to register new user");
-});
-app.post("/user/login", (req, res) => {
-  console.log("This is to login the user");
-});
-*/
 app.use(cors());
 app.use(express.json());
 app.use((req, res, next) => {
@@ -55,12 +18,63 @@ app.use((req, res, next) => {
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
   next();
 });
-// // Use formidable middleware
-// app.use(formidable());
 
 app.use("/posts", require("./Routes/PostsRoute"));
 app.use("/user", require("./Routes/Userroute"));
 app.use("/api/ai", require("./Routes/GoogleGimini"));
+
+// 🔥 Mock Auto Logs Sync API
+const FAILURE_RATE = 0.3; // 30% failure simulation
+const RESPONSE_DELAY_MS = 800;
+
+app.post("/sync-auto-logs", async (req, res) => {
+  try {
+    const { logs } = req.body;
+
+    console.log("📥 /sync-auto-logs hit");
+    console.log("Logs count:", logs?.length || 0);
+
+    if (!logs || !Array.isArray(logs)) {
+      return res.status(400).json({
+        success: false,
+        message: "Logs array required",
+      });
+    }
+
+    // ⏳ simulate delay
+    await new Promise((resolve) => setTimeout(resolve, RESPONSE_DELAY_MS));
+
+    // 🎲 Random failure simulation
+    const shouldFail = Math.random() < FAILURE_RATE;
+
+    if (shouldFail) {
+      console.log("❌ Simulated sync failure");
+
+      return res.status(500).json({
+        success: false,
+        message: "Simulated server failure",
+      });
+    }
+
+    // ✅ Simulated success
+    const syncedIds = logs.map((log) => log.id);
+
+    console.log("✅ Simulated sync success");
+
+    res.json({
+      success: true,
+      message: "Logs synced (mock)",
+      syncedIds,
+    });
+  } catch (error) {
+    console.error("💥 Sync API Error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Unexpected server error",
+    });
+  }
+});
 
 // app.get("/api/spyfu", async (req, res) => {
 //   // const domain = req.query.domain;
